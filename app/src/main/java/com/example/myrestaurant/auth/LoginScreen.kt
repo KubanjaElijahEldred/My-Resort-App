@@ -30,7 +30,6 @@ fun LoginScreen(
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
     onGoogleSignIn: () -> Unit,
-    authRepository: AuthRepository,
     modifier: Modifier = Modifier
 ) {
     var email by remember { mutableStateOf("") }
@@ -38,11 +37,10 @@ fun LoginScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     var loginError by remember { mutableStateOf<String?>(null) }
     
-    val authState by authRepository.authState.collectAsStateWithLifecycle()
-    val context = LocalContext.current
+    val authState = SimpleAuthManager.authState
 
-    LaunchedEffect(authState.currentUser) {
-        if (authState.currentUser != null && authState.currentUser!!.emailVerified) {
+    LaunchedEffect(authState.value.currentUser) {
+        if (authState.value.currentUser != null && authState.value.currentUser!!.emailVerified) {
             onLoginSuccess()
         }
     }
@@ -129,7 +127,7 @@ fun LoginScreen(
                             )
                         }
                     },
-                    visualTransformation = if (passwordVisible) PasswordVisualTransformation.None else PasswordVisualTransformation(),
+                    visualTransformation = if (passwordVisible) androidx.compose.ui.text.input.VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = LuxuryBeige,
@@ -161,15 +159,17 @@ fun LoginScreen(
                 Button(
                     onClick = {
                         if (email.isNotBlank() && password.isNotBlank()) {
-                            // Perform login
-                            // This will be handled by ViewModel in a real app
+                            val result = SimpleAuthManager.signIn(email, password)
+                            if (!result.isValid) {
+                                loginError = result.errorMessage
+                            }
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = LuxuryBeige),
-                    enabled = !authState.isLoading && email.isNotBlank() && password.isNotBlank()
+                    enabled = !authState.value.isLoading && email.isNotBlank() && password.isNotBlank()
                 ) {
-                    if (authState.isLoading) {
+                    if (authState.value.isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(20.dp),
                             color = DarkText,
@@ -225,7 +225,7 @@ fun LoginScreen(
                 OutlinedButton(
                     onClick = onGoogleSignIn,
                     modifier = Modifier.fillMaxWidth(),
-                    border = BorderStroke(1.dp, LuxuryBeige)
+                    border = androidx.compose.foundation.BorderStroke(1.dp, LuxuryBeige)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,

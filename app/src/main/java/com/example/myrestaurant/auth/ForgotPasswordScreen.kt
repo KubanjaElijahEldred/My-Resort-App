@@ -24,7 +24,6 @@ import com.example.myrestaurant.resort.DarkText
 @Composable
 fun ForgotPasswordScreen(
     onNavigateToLogin: () -> Unit,
-    authRepository: AuthRepository,
     modifier: Modifier = Modifier
 ) {
     var email by remember { mutableStateOf("") }
@@ -154,8 +153,13 @@ fun ForgotPasswordScreen(
                     onClick = {
                         if (validateEmail()) {
                             isLoading = true
-                            // Perform password reset
-                            // This will be handled by ViewModel in a real app
+                            val result = SimpleAuthManager.sendPasswordReset(email)
+                            if (result.isValid) {
+                                successMessage = result.errorMessage
+                            } else {
+                                resetError = result.errorMessage
+                            }
+                            isLoading = false
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),

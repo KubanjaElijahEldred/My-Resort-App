@@ -2,10 +2,8 @@ package com.example.myrestaurant.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -29,7 +27,6 @@ fun RegisterScreen(
     onRegisterSuccess: () -> Unit,
     onNavigateToLogin: () -> Unit,
     onGoogleSignIn: () -> Unit,
-    authRepository: AuthRepository,
     modifier: Modifier = Modifier
 ) {
     var displayName by remember { mutableStateOf("") }
@@ -41,11 +38,11 @@ fun RegisterScreen(
     var registerError by remember { mutableStateOf<String?>(null) }
     var successMessage by remember { mutableStateOf<String?>(null) }
     
-    val authState by authRepository.authState.collectAsStateWithLifecycle()
+    val authState = SimpleAuthManager.authState
 
-    LaunchedEffect(authState.currentUser) {
-        if (authState.currentUser != null) {
-            if (authState.currentUser!!.emailVerified) {
+    LaunchedEffect(authState.value.currentUser) {
+        if (authState.value.currentUser != null) {
+            if (authState.value.currentUser!!.emailVerified) {
                 onRegisterSuccess()
             } else {
                 successMessage = "Registration successful! Please check your email to verify your account."
@@ -86,8 +83,7 @@ fun RegisterScreen(
         modifier = modifier
             .fillMaxSize()
             .background(DeepOlive)
-            .padding(24.dp)
-            .verticalScroll(rememberScrollState()),
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -195,7 +191,7 @@ fun RegisterScreen(
                             )
                         }
                     },
-                    visualTransformation = if (passwordVisible) PasswordVisualTransformation.None else PasswordVisualTransformation(),
+                    visualTransformation = if (passwordVisible) androidx.compose.ui.text.input.VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = LuxuryBeige,
@@ -233,7 +229,7 @@ fun RegisterScreen(
                             )
                         }
                     },
-                    visualTransformation = if (confirmPasswordVisible) PasswordVisualTransformation.None else PasswordVisualTransformation(),
+                    visualTransformation = if (confirmPasswordVisible) androidx.compose.ui.text.input.VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = LuxuryBeige,
@@ -276,19 +272,23 @@ fun RegisterScreen(
                 Button(
                     onClick = {
                         if (validateInputs()) {
-                            // Perform registration
-                            // This will be handled by ViewModel in a real app
+                            val result = SimpleAuthManager.register(email, password, displayName)
+                            if (result.isValid) {
+                                successMessage = result.errorMessage
+                            } else {
+                                registerError = result.errorMessage
+                            }
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = LuxuryBeige),
-                    enabled = !authState.isLoading && 
+                    enabled = !authState.value.isLoading && 
                              displayName.isNotBlank() && 
                              email.isNotBlank() && 
                              password.isNotBlank() && 
                              confirmPassword.isNotBlank()
                 ) {
-                    if (authState.isLoading) {
+                    if (authState.value.isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(20.dp),
                             color = DarkText,
@@ -330,7 +330,7 @@ fun RegisterScreen(
                 OutlinedButton(
                     onClick = onGoogleSignIn,
                     modifier = Modifier.fillMaxWidth(),
-                    border = BorderStroke(1.dp, LuxuryBeige)
+                    border = androidx.compose.foundation.BorderStroke(1.dp, LuxuryBeige)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
