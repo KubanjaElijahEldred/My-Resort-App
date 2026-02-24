@@ -37,6 +37,7 @@ fun LoginScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     var loginError by remember { mutableStateOf<String?>(null) }
     
+    val context = LocalContext.current
     val authState = SimpleAuthManager.authState
 
     LaunchedEffect(authState.value.currentUser) {
@@ -159,7 +160,7 @@ fun LoginScreen(
                 Button(
                     onClick = {
                         if (email.isNotBlank() && password.isNotBlank()) {
-                            val result = SimpleAuthManager.signIn(email, password)
+                            val result = SimpleAuthManager.signIn(email, password, context)
                             if (!result.isValid) {
                                 loginError = result.errorMessage
                             }

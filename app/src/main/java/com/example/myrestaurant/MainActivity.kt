@@ -1,5 +1,6 @@
 package com.example.myrestaurant
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +20,10 @@ import com.example.myrestaurant.resort.GarugaResortScreen
 import com.example.myrestaurant.dashboard.BookingsDashboard
 import com.example.myrestaurant.dashboard.RoomManagementDashboard
 import com.example.myrestaurant.dashboard.FinancialReportsDashboard
+import com.example.myrestaurant.auth.LoginScreen
+import com.example.myrestaurant.auth.RegisterScreen
+import com.example.myrestaurant.auth.ForgotPasswordScreen
+import com.example.myrestaurant.auth.SimpleAuthManager
 import com.example.myrestaurant.ui.theme.MyRestaurantTheme
 
 // Using lowercase to follow Kotlin standards and avoid warnings
@@ -32,11 +37,52 @@ class MainActivity : ComponentActivity() {
             MyRestaurantTheme {
                 val navController = rememberNavController()
 
+                // Handle deep links for email verification
+                val uri = intent.data
+                if (uri != null) {
+                    SimpleAuthManager.handleDeepLink(uri)
+                }
+
                 Surface(modifier = Modifier.fillMaxSize()) {
                     NavHost(
                         navController = navController,
-                        startDestination = "home"
+                        startDestination = "login"
                     ) {
+                        composable("login") {
+                            LoginScreen(
+                                onLoginSuccess = { 
+                                    navController.navigate("home")
+                                },
+                                onNavigateToRegister = { 
+                                    navController.navigate("register")
+                                },
+                                onNavigateToForgotPassword = { 
+                                    navController.navigate("forgot")
+                                },
+                                onGoogleSignIn = { /* Google Sign-In */ }
+                            )
+                        }
+
+                        composable("register") {
+                            RegisterScreen(
+                                onRegisterSuccess = { 
+                                    navController.navigate("login")
+                                },
+                                onNavigateToLogin = { 
+                                    navController.popBackStack()
+                                },
+                                onGoogleSignIn = { /* Google Sign-In */ }
+                            )
+                        }
+
+                        composable("forgot") {
+                            ForgotPasswordScreen(
+                                onNavigateToLogin = { 
+                                    navController.popBackStack()
+                                }
+                            )
+                        }
+
                         composable("home") {
                             GarugaResortScreen(
                                 onNavigateToDashboard = { route ->

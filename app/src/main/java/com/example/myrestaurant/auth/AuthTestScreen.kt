@@ -71,6 +71,6 @@ fun AuthTestScreen(
                     Text("Test Forgot Password", color = Color.White, fontWeight = FontWeight.Bold)
                 }
             }
-        )
+        }
     }
 }

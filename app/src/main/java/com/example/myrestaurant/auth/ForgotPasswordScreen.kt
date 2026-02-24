@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -30,6 +31,8 @@ fun ForgotPasswordScreen(
     var resetError by remember { mutableStateOf<String?>(null) }
     var successMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
+    
+    val context = LocalContext.current
 
     fun validateEmail(): Boolean {
         return when {
@@ -153,7 +156,7 @@ fun ForgotPasswordScreen(
                     onClick = {
                         if (validateEmail()) {
                             isLoading = true
-                            val result = SimpleAuthManager.sendPasswordReset(email)
+                            val result = SimpleAuthManager.sendPasswordReset(email, context)
                             if (result.isValid) {
                                 successMessage = result.errorMessage
                             } else {

@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -38,6 +39,7 @@ fun RegisterScreen(
     var registerError by remember { mutableStateOf<String?>(null) }
     var successMessage by remember { mutableStateOf<String?>(null) }
     
+    val context = LocalContext.current
     val authState = SimpleAuthManager.authState
 
     LaunchedEffect(authState.value.currentUser) {
@@ -272,7 +274,7 @@ fun RegisterScreen(
                 Button(
                     onClick = {
                         if (validateInputs()) {
-                            val result = SimpleAuthManager.register(email, password, displayName)
+                            val result = SimpleAuthManager.register(email, password, displayName, context)
                             if (result.isValid) {
                                 successMessage = result.errorMessage
                             } else {
