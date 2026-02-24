@@ -1,0 +1,88 @@
+package com.example.myrestaurant
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.myrestaurant.resort.GarugaResortScreen
+import com.example.myrestaurant.ui.theme.MyRestaurantTheme
+
+// Using lowercase to follow Kotlin standards and avoid warnings
+val deepOlive = Color(0xFF3B4433)
+val luxuryBeige = Color(0xFFD9C5A7)
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            MyRestaurantTheme {
+                val navController = rememberNavController()
+
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = "home"
+                    ) {
+                        composable("home") {
+                            GarugaResortScreen(
+                                onNavigateToDashboard = { route ->
+                                    navController.navigate(route)
+                                }
+                            )
+                        }
+
+                        composable("bookings") {
+                            SimpleDashboardScreen("Bookings Management") {
+                                navController.popBackStack()
+                            }
+                        }
+
+                        composable("rooms") {
+                            SimpleDashboardScreen("Room Management") {
+                                navController.popBackStack()
+                            }
+                        }
+
+                        composable("revenue") {
+                            SimpleDashboardScreen("Financial Reports") {
+                                navController.popBackStack()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SimpleDashboardScreen(title: String, onBack: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(deepOlive)
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = title, color = luxuryBeige, fontSize = 28.sp)
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(
+            onClick = onBack,
+            colors = ButtonDefaults.buttonColors(containerColor = luxuryBeige)
+        ) {
+            Text("Back to Resort", color = Color(0xFF2D2D2D))
+        }
+    }
+}
