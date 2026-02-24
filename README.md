@@ -1,4 +1,4 @@
-# MyRestaurant - Garuga Resort Management App
+# MyResort - Garuga Resort Management App
 
 A modern Android application built with Jetpack Compose for managing restaurant and resort operations at Garuga Resort.
 
