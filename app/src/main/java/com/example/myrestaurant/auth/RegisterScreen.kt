@@ -47,7 +47,8 @@ fun RegisterScreen(
             if (authState.value.currentUser!!.emailVerified) {
                 onRegisterSuccess()
             } else {
-                successMessage = "Registration successful! Please check your email to verify your account."
+                // Account created but not verified - show message and verify button
+                successMessage = "Account created! Click the button below to verify your email and access the app."
             }
         }
     }
@@ -266,6 +267,36 @@ fun RegisterScreen(
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Verify Email Button (appears immediately after registration)
+                    if (authState.value.currentUser != null && !authState.value.currentUser!!.emailVerified) {
+                        Button(
+                            onClick = {
+                                val currentUser = authState.value.currentUser!!
+                                val result = SimpleAuthManager.verifyEmail(currentUser.email, "instant-verify")
+                                if (result.isValid) {
+                                    onRegisterSuccess() // Navigate to home
+                                } else {
+                                    registerError = result.errorMessage
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Green),
+                            enabled = !authState.value.isLoading
+                        ) {
+                            if (authState.value.isLoading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    color = Color.White,
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                Text("Verify Email & Access App", color = Color.White, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))

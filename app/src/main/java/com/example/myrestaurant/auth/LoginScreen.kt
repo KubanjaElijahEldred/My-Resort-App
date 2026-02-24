@@ -195,6 +195,31 @@ fun LoginScreen(
                     )
                 }
 
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Test Verification Button (for testing)
+                if (authState.value.currentUser != null && !authState.value.currentUser!!.emailVerified) {
+                    Button(
+                        onClick = {
+                            // Simulate email verification for testing
+                            val currentUser = authState.value.currentUser!!
+                            val result = SimpleAuthManager.verifyEmail(currentUser.email, "test-token")
+                            if (result.isValid) {
+                                loginError = null // Clear error
+                            } else {
+                                loginError = result.errorMessage
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Green),
+                        enabled = !authState.value.isLoading
+                    ) {
+                        Text("Verify Email (Test)", color = Color.White, fontWeight = FontWeight.Bold)
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Divider

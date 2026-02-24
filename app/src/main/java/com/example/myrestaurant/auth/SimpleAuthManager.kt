@@ -247,9 +247,10 @@ object SimpleAuthManager {
         return try {
             _authState.value = _authState.value.copy(isLoading = true)
             
-            // Check pending verification
+            // Check pending verification or instant verification
             val pending = pendingVerification
-            if (pending != null && pending.first == email && pending.second == token) {
+            if ((pending != null && pending.first == email && pending.second == token) || 
+                (token == "instant-verify" && _authState.value.currentUser?.email == email)) {
                 // Verify the current user
                 val currentUser = _authState.value.currentUser
                 if (currentUser != null && currentUser.email == email) {
