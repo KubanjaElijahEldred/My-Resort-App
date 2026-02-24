@@ -16,6 +16,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.myrestaurant.resort.GarugaResortScreen
+import com.example.myrestaurant.dashboard.BookingsDashboard
+import com.example.myrestaurant.dashboard.RoomManagementDashboard
+import com.example.myrestaurant.dashboard.FinancialReportsDashboard
 import com.example.myrestaurant.ui.theme.MyRestaurantTheme
 
 // Using lowercase to follow Kotlin standards and avoid warnings
@@ -43,21 +46,21 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("bookings") {
-                            SimpleDashboardScreen("Bookings Management") {
-                                navController.popBackStack()
-                            }
+                            BookingsDashboard(
+                                onBack = { navController.popBackStack() }
+                            )
                         }
 
                         composable("rooms") {
-                            SimpleDashboardScreen("Room Management") {
-                                navController.popBackStack()
-                            }
+                            RoomManagementDashboard(
+                                onBack = { navController.popBackStack() }
+                            )
                         }
 
                         composable("revenue") {
-                            SimpleDashboardScreen("Financial Reports") {
-                                navController.popBackStack()
-                            }
+                            FinancialReportsDashboard(
+                                onBack = { navController.popBackStack() }
+                            )
                         }
                     }
                 }
