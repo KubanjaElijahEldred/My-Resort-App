@@ -76,7 +76,7 @@ A modern Android application built with Jetpack Compose for managing restaurant 
 2. **Open in Android Studio**
    - Open Android Studio
    - Select "Open an existing project"
-   - Navigate to the cloned directory
+   - Navigate to the cloned directory,
 
 3. **Build and Run**
    - Connect your Android device or start an emulator
